@@ -96,8 +96,18 @@ export const apps: AppProfile[] = [
         "Attachments are encrypted with AES-256-CBC plus an HMAC-SHA256 and uploaded to a blob store.",
         "添付ファイルは AES-256-CBC と HMAC-SHA256 で暗号化して blob store に上げる。",
       ),
+      t(
+        "A second check mark means the message was received; two blue check marks mean it was read. In a group, both wait for every member.",
+        "チェックが 2 つになったら受信済み、2 つとも青になったら既読。グループでは全員がそうなるまで変わらない。",
+      ),
     ],
-    sources: [WA_WP],
+    sources: [
+      WA_WP,
+      {
+        title: "WhatsApp Help: How to check read receipts",
+        url: "https://faq.whatsapp.com/665923838265756",
+      },
+    ],
   },
   {
     id: "signal",
