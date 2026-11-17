@@ -21,6 +21,7 @@ export class SeqPlayer extends HTMLElement {
   #relock: number | undefined;
   #wide = window.matchMedia(WIDE);
   #abort = new AbortController();
+  #userStop: AbortController | undefined;
 
   get #id(): string {
     return this.dataset.seq ?? "";
@@ -38,16 +39,18 @@ export class SeqPlayer extends HTMLElement {
     this.#arrows = JSON.parse(this.dataset.arrows ?? "[]") as Arrow[];
     this.#steps = [...this.querySelectorAll<SVGAElement>(".step")];
     this.#cards = [...this.querySelectorAll<HTMLElement>(".card")];
+    this.#abort = new AbortController();
+    this.#current = -1;
     const signal = this.#abort.signal;
 
     this.classList.add("is-live");
-    this.#q("[data-act=prev]")?.addEventListener("click", () => this.go(this.#current - 1), {
+    this.#q("[data-act=prev]")?.addEventListener("click", () => this.#user(this.#current - 1), {
       signal,
     });
-    this.#q("[data-act=next]")?.addEventListener("click", () => this.go(this.#current + 1), {
+    this.#q("[data-act=next]")?.addEventListener("click", () => this.#user(this.#current + 1), {
       signal,
     });
-    this.#q("[data-act=restart]")?.addEventListener("click", () => this.go(0), { signal });
+    this.#q("[data-act=restart]")?.addEventListener("click", () => this.#user(0), { signal });
     this.#q("[data-act=play]")?.addEventListener("click", () => this.#togglePlay(), { signal });
 
     for (const [i, a] of this.#steps.entries()) {
@@ -55,7 +58,7 @@ export class SeqPlayer extends HTMLElement {
         "click",
         (e) => {
           e.preventDefault();
-          this.go(i);
+          this.#user(i);
         },
         { signal },
       );
@@ -64,9 +67,9 @@ export class SeqPlayer extends HTMLElement {
     this.addEventListener(
       "keydown",
       (e) => {
-        if (e.target instanceof HTMLInputElement) return;
-        if (e.key === "ArrowRight" || e.key === "ArrowDown") this.go(this.#current + 1);
-        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") this.go(this.#current - 1);
+        if (!(e.target instanceof Element) || !e.target.closest(".stage")) return;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") this.#user(this.#current + 1);
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") this.#user(this.#current - 1);
         else return;
         e.preventDefault();
       },
@@ -81,7 +84,8 @@ export class SeqPlayer extends HTMLElement {
         const i = stepFromHash(a.getAttribute("href") ?? "", this.#id);
         if (i === undefined) return;
         e.preventDefault();
-        this.go(i);
+        history.replaceState(null, "", `#${this.#id}-${clamp(i, this.count) + 1}`);
+        this.#user(i);
         if (!this.#wide.matches)
           this.scrollIntoView({ behavior: this.#behavior(), block: "start" });
       },
@@ -91,8 +95,25 @@ export class SeqPlayer extends HTMLElement {
     this.#wide.addEventListener("change", () => this.#mode(), { signal });
     this.#mode();
 
-    const fromHash = stepFromHash(location.hash, this.#id);
-    this.#set(fromHash ?? 0, false);
+    window.addEventListener("hashchange", () => this.#fromHash(), { signal });
+    if (stepFromHash(location.hash, this.#id) === undefined) {
+      this.#set(0, false);
+    } else if (document.readyState === "complete") {
+      this.#fromHash();
+    } else {
+      this.#set(clamp(stepFromHash(location.hash, this.#id) ?? 0, this.count), false);
+      window.addEventListener("load", () => requestAnimationFrame(() => this.#fromHash()), {
+        once: true,
+        signal,
+      });
+    }
+  }
+
+  #fromHash(): void {
+    const i = stepFromHash(location.hash, this.#id);
+    if (i === undefined) return;
+    this.go(i, "auto");
+    if (!this.#wide.matches) this.scrollIntoView({ block: "start" });
   }
 
   disconnectedCallback(): void {
@@ -102,23 +123,31 @@ export class SeqPlayer extends HTMLElement {
     this.#stop();
   }
 
-  go(i: number): void {
+  #user(i: number): void {
+    this.go(i);
+    const live = this.#q(".stage-live");
+    const title = this.#cards[this.#current]?.querySelector("h3")?.textContent ?? "";
+    if (live) live.textContent = `${this.#current + 1} / ${this.count}: ${title}`;
+  }
+
+  go(i: number, behavior: ScrollBehavior = this.#behavior()): void {
     const next = clamp(i, this.count);
     if (this.#wide.matches) {
       this.#lockUntil = performance.now() + LOCK_MS;
       window.clearTimeout(this.#relock);
       this.#relock = window.setTimeout(() => this.#fromScroll(), LOCK_MS + 50);
-      this.#cards[next]?.scrollIntoView({ behavior: this.#behavior(), block: "center" });
+      this.#cards[next]?.scrollIntoView({ behavior, block: "center" });
     }
     this.#set(next, true);
   }
 
   #fromScroll(): void {
-    if (performance.now() < this.#lockUntil) return;
+    if (!this.#wide.matches || performance.now() < this.#lockUntil) return;
     const i = activeCard(
       this.#cards.map((c) => c.getBoundingClientRect().top),
       window.innerHeight * 0.5,
     );
+    if (i === undefined || i !== this.#current) this.#stop();
     if (i !== undefined && i !== this.#current) this.#set(i, true);
   }
 
@@ -223,6 +252,11 @@ export class SeqPlayer extends HTMLElement {
     if (this.#current === this.count - 1) this.go(0);
     const btn = this.#q("[data-act=play]");
     btn?.setAttribute("aria-pressed", "true");
+    this.#userStop = new AbortController();
+    const stop = () => this.#stop();
+    for (const type of ["wheel", "touchstart"] as const) {
+      window.addEventListener(type, stop, { passive: true, signal: this.#userStop.signal });
+    }
     this.#timer = window.setInterval(() => {
       if (this.#current >= this.count - 1) this.#stop();
       else this.go(this.#current + 1);
@@ -230,6 +264,7 @@ export class SeqPlayer extends HTMLElement {
   }
 
   #stop(): void {
+    this.#userStop?.abort();
     window.clearInterval(this.#timer);
     this.#timer = undefined;
     this.#q("[data-act=play]")?.setAttribute("aria-pressed", "false");

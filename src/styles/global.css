@@ -657,6 +657,15 @@ seq-player:not(.is-live) .stage-bar {
   display: none;
 }
 
+.stage-live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .stage-caption {
   flex: 1;
   min-width: 0;
@@ -842,6 +851,10 @@ seq-player.is-live .step.is-current {
 
 .step.is-current .arrow {
   stroke-width: 2.6;
+}
+
+seq-player.is-live .step:focus-visible {
+  opacity: 1;
 }
 
 .step:focus-visible .hit {

@@ -29,11 +29,12 @@ const arrows = JSON.stringify(geo.arrows.map((a, i) => ({ ...a, kind: seq.steps[
           <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z" /></svg>
           <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10M11 3v10" /></svg>
         </button>
-        <p class="stage-caption" aria-live="polite"></p>
+        <p class="stage-caption" aria-hidden="true"></p>
+        <p class="stage-live" aria-live="polite"></p>
         <button type="button" class="ctl" data-act="prev" aria-label={tr(lang, "prev")}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
         </button>
-        <output class="stage-count">1 / {seq.steps.length}</output>
+        <span class="stage-count" aria-hidden="true">1 / {seq.steps.length}</span>
         <button type="button" class="ctl" data-act="next" aria-label={tr(lang, "next")}>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
         </button>
