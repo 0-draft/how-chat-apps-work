@@ -1,0 +1,4 @@
+# Hosts that answer bots with 403 but serve the page to browsers.
+# Each was opened in a real browser and checked against the claim it backs (2026-11-17).
+^https://www\.gsma\.com/
+^https://support\.wire\.com/
