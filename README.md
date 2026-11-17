@@ -43,3 +43,7 @@ npm run dev
 [Astro](https://astro.build) renders every diagram to SVG at build time, so the page reads fine with JavaScript off. A small custom element, [`<seq-player>`](src/scripts/seq-player.ts), adds the stepping. The simulator is a [Svelte](https://svelte.dev) island on top of a [pure reducer](src/lib/sim/model.ts). English and Japanese share the same step data; each string is stored as `{ en, ja }`, and the tests fail if one language is missing or the two drift apart in structure.
 
 Type is set in Literata, Schibsted Grotesk and Martian Mono, with Zen Kaku Gothic New and Shippori Mincho B1 for Japanese.
+
+## License
+
+Code is [MIT](LICENSE). The writing and diagrams (`src/content/`, `src/lib/sequences/`, `src/lib/apps.ts`, `docs/`) are [CC BY 4.0](LICENSE-CONTENT): reuse them anywhere, with attribution.
