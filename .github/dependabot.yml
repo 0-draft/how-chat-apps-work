@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      astro:
+        patterns: ["astro", "@astrojs/*", "svelte"]
+      fonts:
+        patterns: ["@fontsource/*", "@fontsource-variable/*"]
+      tooling:
+        patterns: ["@biomejs/*", "typescript", "@types/*"]
+      test:
+        patterns: ["vitest", "jsdom", "@playwright/test", "@axe-core/*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
