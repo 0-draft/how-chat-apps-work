@@ -98,7 +98,7 @@ export const apps: AppProfile[] = [
       ),
       t(
         "The second check mark appears once the message reaches the recipient, and both turn blue once it has been read. In a group, each waits for every member. Either side can turn read receipts off, and then the blue never comes.",
-        "2 つ目のチェックは相手の端末に届いた時点で、2 つとも青になるのは読まれた時点でつく。グループではどちらも全員分がそろうまで変わらない。既読通知はどちらの側でもオフにでき、その場合は青にならない。",
+        "相手の端末に届くと 2 つ目のチェックがつき、読まれると 2 つとも青になる。グループではどちらも全員分がそろうまで変わらない。既読通知はどちらの側でもオフにでき、その場合は青にならない。",
       ),
     ],
     sources: [
@@ -242,6 +242,10 @@ export const mls = {
     {
       title: "Wire: MLS is coming to Wire",
       url: "https://wire.com/en/blog/mls-is-coming-to-wire-app-learn-more",
+    },
+    {
+      title: "Wire: Migration from Proteus to MLS protocol",
+      url: "https://support.wire.com/hc/en-us/articles/18666343787293-Migration-from-Proteus-to-MLS-protocol",
     },
     {
       title: "Webex: End-to-end encryption",
