@@ -28,7 +28,7 @@ const chapters = await Promise.all(
 const frames = (c: (typeof chapters)[number]) => (c.seq ? sequences[c.seq].steps.length : 0);
 const chapterMeta = (c: (typeof chapters)[number]) => {
   const n = frames(c);
-  if (lang === "ja") return n ? `第${c.number}章 ・ ${n} ステップ` : `第${c.number}章`;
+  if (lang === "ja") return n ? `第 ${c.number} 章・${n} ステップ` : `第 ${c.number} 章`;
   return n ? `Chapter ${c.number} · ${n} steps` : `Chapter ${c.number}`;
 };
 const heroLines = tr(lang, "heroTitle").split("\n");

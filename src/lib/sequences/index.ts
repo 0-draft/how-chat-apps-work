@@ -23,7 +23,7 @@ const GW: Actor = {
 };
 const MSG: Actor = {
   id: "msg",
-  name: t("Messaging", "メッセージ"),
+  name: t("Messaging", "メッセージサーバー"),
   sub: t("order + delivery", "順序・配送"),
   kind: "service",
 };
@@ -36,7 +36,7 @@ const DB: Actor = {
 const PUSH: Actor = {
   id: "push",
   name: t("APNs / FCM", "APNs / FCM"),
-  sub: t("OS push", "OS の通知網"),
+  sub: t("OS push service", "OS のプッシュ通知"),
   kind: "external",
 };
 
@@ -69,7 +69,7 @@ export const overview: Sequence = {
       label: "SEND + userId",
       title: t("The gateway doesn't look inside", "ゲートウェイは中身を見ない"),
       body: t(
-        "A gateway's job is to hold a very large number of open connections. It doesn't interpret messages. It stamps the frame with the user ID from the authenticated session and forwards it over an internal RPC.",
+        "A gateway exists to hold open connections, lots of them, and it doesn't interpret what goes through. It stamps the frame with the user ID from the authenticated session and forwards it over an internal RPC.",
         "ゲートウェイの仕事は大量の接続を抱えておくこと。メッセージの中身は解釈せず、認証済みセッションのユーザー ID を付けて内部 RPC で後ろに渡す。",
       ),
       payload: `rpc Send {
@@ -96,7 +96,7 @@ c_8f2a   | 1042 | a-7d1c9e      | 31337  | ...`,
       to: "msg",
       kind: "response",
       label: "OK",
-      title: t("Only after it's durable", "書けたら次へ"),
+      title: t("Only after it's durable", "永続化してから ACK"),
       body: t(
         "If the server acknowledged before the write was durable, a crash would lose a message the sender believes was sent. The ACK waits for the write.",
         "書き込みが確定する前に送信者へ ACK を返すと、サーバーが落ちたときに「送れたはずのメッセージ」が消える。ACK は永続化のあと。",
@@ -153,9 +153,9 @@ c_8f2a   | 1042 | a-7d1c9e      | 31337  | ...`,
       to: "msg",
       kind: "request",
       label: "DELIVERED upTo=1042",
-      title: t('"Got everything up to here"', "届いたことを返す"),
+      title: t('"Got everything up to here"', "「ここまで届いた」と返す"),
       body: t(
-        "The ack is a position, not one per message. If 50 messages arrive at once, one ack covers them all.",
+        "It's a position, not one ACK per message. If 50 messages arrive at once, one ACK covers them all.",
         "1 通ずつではなく「ここまで受け取った」という形で返す。まとめて 50 通届いても ACK は 1 回で済む。",
       ),
     },
@@ -167,7 +167,7 @@ c_8f2a   | 1042 | a-7d1c9e      | 31337  | ...`,
       title: t("Delivered", "配信済み"),
       body: t(
         "This is WhatsApp's second grey tick. LINE doesn't show this state at all, only \"Read\".",
-        "WhatsApp のチェック 2 つはこの段階。LINE はこの状態を画面に出さず、既読だけを見せる。",
+        "WhatsApp の灰色のチェック 2 つはこの段階。LINE はこの状態を画面に出さず、既読だけを見せる。",
       ),
     },
     {
@@ -175,7 +175,7 @@ c_8f2a   | 1042 | a-7d1c9e      | 31337  | ...`,
       to: "msg",
       kind: "request",
       label: "READ upTo=1042",
-      title: t("B opens the chat", "トークを開いたら既読"),
+      title: t("B opens the chat", "チャットを開いたら既読"),
       body: t(
         "Sent when the chat is actually on screen. It's also a position, so ten unread messages still cost one frame.",
         "画面にチャットが表示された時点で送る。これも seq の位置で送るので、未読が何通あっても 1 フレーム。",
@@ -200,8 +200,8 @@ c_8f2a   | 1042 | a-7d1c9e      | 31337  | ...`,
       label: "READ_RECEIPT",
       title: t("Read", "既読がつく"),
       body: t(
-        'Every message A sent at or below 1042 is now read. In a group, the server counts members whose upTo has passed a message and shows "Read by 3".',
-        "A の画面で 1042 以下の自分のメッセージに既読が付く。グループなら upTo を人数分集計して「既読 3」のように出す。",
+        "Every message A sent at or below 1042 is now marked read. Groups count this differently; that's in a later chapter.",
+        "A の画面で、1042 以下の自分のメッセージに既読がつく。グループでの数え方は後の章で扱う。",
       ),
     },
   ],
@@ -287,8 +287,8 @@ export const connection: Sequence = {
       label: "ServerHello … Finished",
       title: t("An encrypted channel exists", "暗号化された通信路ができる"),
       body: t(
-        "The phone verifies the certificate and both sides derive the same keys. Everything after this is encrypted.",
-        "サーバー証明書を検証し、共有鍵が決まる。ここから先は全部暗号化される。",
+        "Both sides derive the same keys from the key shares. Everything after ServerHello, including the certificate, is already encrypted; the phone checks the certificate before trusting the channel.",
+        "key_share から両側で同じ鍵を導く。ServerHello より後は証明書も含めて暗号化されていて、端末は証明書を検証してから通信路を信用する。",
       ),
     },
     {
@@ -299,7 +299,7 @@ export const connection: Sequence = {
       title: t("Say who you are", "誰なのかを名乗る"),
       body: t(
         "The app sends the access token it got at login. Whether this rides on HTTP/2 streams, WebSocket or MQTT depends on the app; what matters is one long-lived connection that carries frames both ways.",
-        "ログイン時にもらったアクセストークンを送る。プロトコルは HTTP/2 のストリームだったり WebSocket だったり MQTT だったりとアプリによって違うが、「双方向に流せる 1 本の接続」を作るという点は同じ。",
+        "ログイン時にもらったアクセストークンを送る。HTTP/2 のストリームに乗せるか、WebSocket か MQTT かはアプリによって違う。大事なのは、双方向にフレームを流せる 1 本の接続があること。",
       ),
       payload: `{
   "op": "HELLO",
@@ -361,7 +361,7 @@ export const connection: Sequence = {
       title: t("Go quiet and you get forgotten", "黙っていると忘れられる"),
       body: t(
         "Carrier NATs and middleboxes silently drop TCP connections that carry nothing for a while. So the app sends a tiny frame every few tens of seconds to few minutes. Shorter keeps the line alive; longer saves battery.",
-        "キャリアの NAT や途中の機器は、しばらく何も流れない TCP 接続を黙って捨てる。なので数十秒〜数分おきに小さなフレームを流して生かしておく。短くすれば切れにくく、長くすれば電池が持つ。",
+        "キャリアの NAT や途中の機器は、しばらく何も流れない TCP 接続を黙って捨てる。そこで数十秒〜数分おきに小さなフレームを流して、接続を生かしておく。短くすれば切れにくく、長くすれば電池が持つ。",
       ),
     },
     {
@@ -382,8 +382,8 @@ export const connection: Sequence = {
       label: "PING",
       title: t("Wi-Fi just switched to LTE", "Wi-Fi から LTE に切り替わった"),
       body: t(
-        "A new IP address makes the old TCP connection useless, and nothing tells you it's dead. You only find out when the PONG never comes.",
-        "IP アドレスが変わると古い TCP 接続は使えなくなるが、切れたという通知はどこからも来ない。PONG が返ってこないことで初めて気づく。",
+        "A new IP address makes the old TCP connection useless. The OS may report that the network changed, but nothing reports the dead socket itself; the missing PONG is what proves it.",
+        "IP アドレスが変わると古い TCP 接続は使えなくなる。ネットワークが変わったことは OS が教えてくれても、ソケットが死んだことまでは教えてくれない。PONG が返ってこないことで確かめる。",
       ),
     },
     {
@@ -394,7 +394,7 @@ export const connection: Sequence = {
       title: t("Don't all come back at once", "全員が同時に戻ってこないように"),
       body: t(
         "Wait 1 s, 2 s, 4 s… and add random jitter. Otherwise, when a gateway restarts, millions of phones reconnect in the same instant.",
-        "1s, 2s, 4s… と間隔を伸ばし、さらにランダムなずれ (ジッタ) を足す。ゲートウェイが再起動したとき、数百万台が同じ瞬間に再接続してくるのを防ぐため。",
+        "1 秒、2 秒、4 秒…と間隔を伸ばし、さらにランダムなずれ (ジッタ) を足す。ゲートウェイが再起動したとき、数百万台が同じ瞬間に再接続してくるのを防ぐため。",
       ),
       payload: "delay = min(cap, base * 2^attempt) * random(0.5, 1.0)",
     },
@@ -454,7 +454,7 @@ export const retry: Sequence = {
       title: t("Resend with the same clientMsgId", "同じ clientMsgId で送り直す"),
       body: t(
         "A retry reuses the original ID. That's what makes the send idempotent: doing it twice has the effect of doing it once.",
-        "再送でも ID は最初に振ったものを使う。これが冪等性 (何回やっても結果が 1 回分) の鍵になる。",
+        "再送でも ID は最初に振ったものを使う。これで送信が冪等になる (何回送っても 1 回送ったのと同じ結果になる)。",
       ),
     },
     {
@@ -464,11 +464,12 @@ export const retry: Sequence = {
       label: "SELECT by clientMsgId",
       title: t("Seen this before?", "前に見たことがあるか"),
       body: t(
-        "A unique constraint on (chatId, clientMsgId), or a dedup cache in front of it.",
-        "(chatId, clientMsgId) に一意制約をかけておくか、重複検知用のキャッシュを引く。",
+        "A unique constraint on (chatId, sender, clientMsgId), or a dedup cache in front of it. The sender has to be part of the key: clientMsgId is picked by phones, and two phones can pick the same one.",
+        "(chatId, 送信者, clientMsgId) に一意制約をかけておくか、重複検知用のキャッシュを引く。clientMsgId は端末が勝手に振るので、送信者を含めないと別人の ID とぶつかる。",
       ),
       payload: `SELECT seq FROM messages
  WHERE chat_id = 'c_8f2a'
+   AND sender = 31337
    AND client_msg_id = 'a-7d1c9e';`,
     },
     {
@@ -524,7 +525,7 @@ export const offline: Sequence = {
       to: "push",
       kind: "request",
       label: t("push request", "通知依頼"),
-      title: t("Ask the OS push service", "OS の通知網に頼む"),
+      title: t("Ask the OS push service", "OS のプッシュ通知サービスに頼む"),
       body: t(
         "The app can't wake the phone itself, so it asks Apple (APNs) or Google (FCM). The OS keeps one shared connection for every app and the push arrives over that. Payloads are capped at 4 KB. An end-to-end encrypted app has no plaintext on the server, so the message text isn't in here.",
         "アプリは自前で端末を起こせないので、Apple (APNs) や Google (FCM) に頼む。OS は 1 本の接続を全アプリで共有していて、それ経由で届く。ペイロードは 4KB まで。E2EE のアプリは本文をサーバーが持っていないので、ここに本文は載らない。",
@@ -665,10 +666,10 @@ export const e2ee: Sequence = {
       to: "a",
       kind: "self",
       label: t("ECDH → shared key", "ECDH → 共通鍵"),
-      title: t("Same key, never sent", "会わずに同じ鍵を作る"),
+      title: t("Same key, never sent", "鍵を送らずに同じ鍵を作る"),
       body: t(
-        "Combining your private key with their public key (ECDH) gives exactly the value they get from their private key and your public key. Run that through a key derivation function and you have a message key.",
-        "自分の秘密鍵と相手の公開鍵を組み合わせる (ECDH) と、相手が自分の秘密鍵と A の公開鍵でやったのと同じ値になる。この値を鍵導出関数に通してメッセージ用の鍵を作る。",
+        "A combines its private key with B's public key (ECDH). B, combining its own private key with A's public key, gets exactly the same value. Run that through a key derivation function and you have a message key.",
+        "自分の秘密鍵と相手の公開鍵を組み合わせる (ECDH) と、B が自分の秘密鍵と A の公開鍵で計算した値と一致する。この値を鍵導出関数に通してメッセージ用の鍵を作る。",
       ),
       payload: `shared = X25519(priv_A, pub_B)
 key    = KDF(shared, salt, "message")`,
@@ -681,7 +682,7 @@ key    = KDF(shared, salt, "message")`,
       title: t("Encrypt, with tamper detection", "改ざん検知つきで暗号化"),
       body: t(
         "AES-GCM produces an authentication tag along with the ciphertext. Flip one bit in transit and decryption fails.",
-        "AES-GCM は暗号化と同時に認証タグを作る。途中で 1 bit でも書き換えられれば、復号の時点で失敗する。",
+        "AES-GCM は暗号化と同時に認証タグを作る。途中で 1bit でも書き換えられれば、復号の時点で失敗する。",
       ),
       payload: `nonce = random(12)
 ct, tag = AES-256-GCM(key, nonce, plaintext, aad=header)`,
@@ -694,7 +695,7 @@ ct, tag = AES-256-GCM(key, nonce, plaintext, aad=header)`,
       title: t("A sealed envelope", "サーバーには読めない封筒"),
       body: t(
         "The server sees metadata: who, to whom, when, how big. It can't read the body.",
-        "サーバーが見えるのは宛先、時刻、サイズといったメタデータだけ。本文は読めない。",
+        "サーバーに見えるのは、誰から誰へ・いつ・どのくらいのサイズかというメタデータだけ。本文は読めない。",
       ),
       payload: `{
   "op": "SEND",
@@ -816,7 +817,7 @@ export const group: Sequence = {
       title: t("Offline members get a notification", "オフラインの人には通知"),
       body: t(
         "D isn't connected, so it's the OS push route from the earlier chapter. This is also where the server decides whether to batch notifications or skip a muted chat.",
-        "D の端末はつながっていないので、前の章と同じく OS の通知網経由で起こす。通知を何通ぶんまとめるか、ミュート中なら送らないか、もここで判断する。",
+        "D の端末はつながっていないので、前の章と同じく OS のプッシュ通知で起こす。通知を何通ぶんまとめるか、ミュート中なら送らないか、もここで判断する。",
       ),
     },
     {
@@ -835,10 +836,10 @@ export const group: Sequence = {
       to: "a",
       kind: "push",
       label: t("read by 1", "既読 1"),
-      title: t("The count goes up", "数字が増えていく"),
+      title: t("The count goes up", "既読の数が増えていく"),
       body: t(
-        'With E2EE you don\'t want to encrypt the body once per member. WhatsApp gives each sender a "Sender Key", hands it to every member over their 1:1 encrypted sessions, and encrypts the body once. LINE uses a shared group key and regenerates it when membership changes.',
-        "E2EE のグループでは、本文をメンバーの人数ぶん暗号化し直すのを避けたい。WhatsApp は送信者ごとの「Sender Key」を 1 対 1 の暗号路で全員に配っておき、本文は 1 回だけ暗号化する。LINE はグループ共有鍵を作って配り、メンバーが出入りするたびに作り直す。",
+        'A sees "Read by 1", and the number climbs as others open the chat. With E2EE there\'s a second problem: you don\'t want to encrypt the body once per member. WhatsApp gives each sender a "Sender Key", hands it to every member over their 1:1 encrypted sessions, and encrypts the body once. LINE uses a shared group key and regenerates it when membership changes.',
+        "A の画面に「既読 1」が出て、開いた人が増えるたびに数字が上がる。E2EE ではもう 1 つ問題があって、本文をメンバーの人数ぶん暗号化し直すのは避けたい。WhatsApp は送信者ごとの「Sender Key」を 1 対 1 の暗号路で全員に配っておき、本文は 1 回だけ暗号化する。LINE はグループ共有鍵を作って配り、メンバーが出入りするたびに作り直す。",
       ),
     },
   ],
@@ -852,8 +853,8 @@ const MEDIA: Actor = {
 };
 const BLOB: Actor = {
   id: "blob",
-  name: t("Object store", "オブジェクト"),
-  sub: t("storage / CDN", "ストレージ / CDN"),
+  name: t("Object store", "オブジェクトストレージ"),
+  sub: t("+ CDN", "+ CDN"),
   kind: "store",
 };
 
@@ -891,7 +892,7 @@ digest  = SHA-256(blob)`,
       to: "a",
       kind: "response",
       label: t("signed URL", "署名付き URL"),
-      title: t("Upload straight to storage", "直接置かせる"),
+      title: t("Upload straight to storage", "ストレージに直接上げさせる"),
       body: t(
         "Pushing several megabytes through the messaging servers would stall everyone's chats. Instead the app gets a short-lived signed URL and PUTs directly to storage.",
         "数 MB のファイルをメッセージサーバーに通すと、チャットの配送が詰まる。期限付きの署名 URL を渡して、ストレージに直接 PUT させる。",
@@ -914,7 +915,7 @@ digest  = SHA-256(blob)`,
       from: "blob",
       to: "a",
       kind: "response",
-      label: "201 Created",
+      label: "200 OK",
       title: t("Uploaded", "置けた"),
       body: t("Only now can the message itself go out.", "ここで初めてメッセージを送れる。"),
     },

@@ -34,7 +34,7 @@ const T = {
     server: "サーバー",
     dropAck: "次の ACK を落とす",
     online: "オンライン",
-    open: "トークを開く",
+    open: "チャットを開く",
     retry: "再送",
     send: "送信",
     placeholder: "メッセージ",

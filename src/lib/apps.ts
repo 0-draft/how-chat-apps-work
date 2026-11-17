@@ -54,8 +54,8 @@ export const apps: AppProfile[] = [
         "Letter Sealing v2 は対応クライアント同士なら 1 対 1 もグループも既定で有効。送信者 ID・受信者 ID は暗号化されない。",
       ),
       t(
-        "Message storage moved from Redis to HBase as volume grew.",
-        "メッセージの保存先は、量の増加にあわせて Redis から HBase に移った。",
+        "Message storage moved from Redis to HBase as volume grew, with Redis kept as a cache.",
+        "メッセージの保存先は、量の増加にあわせて Redis から HBase に移り、Redis はキャッシュとして残した。",
       ),
     ],
     sources: [
@@ -104,8 +104,8 @@ export const apps: AppProfile[] = [
     name: "Signal",
     transport: t("—", "—"),
     e2ee: t(
-      "PQXDH key agreement (replaced X3DH for new chats) and the Double Ratchet.",
-      "鍵合意は PQXDH (新規チャットでは X3DH を置き換え)、その後は Double Ratchet。",
+      "PQXDH key agreement (announced in 2023 to replace X3DH for new chats) and the Double Ratchet.",
+      "鍵合意は PQXDH (2023 年に、新規チャットでは X3DH を置き換えると発表)、その後は Double Ratchet。",
     ),
     e2eeDefault: "yes",
     groups: t("—", "—"),
@@ -115,8 +115,8 @@ export const apps: AppProfile[] = [
         "2025 年 10 月から、Double Ratchet に耐量子のラチェット SPQR を加えた Triple Ratchet を段階的に展開している。",
       ),
       t(
-        "Sealed sender hides who sent a message from the service itself.",
-        "Sealed sender で、送信者が誰かをサービス自身にも見せないようにしている。",
+        "Sealed sender takes the sender's identity off the message envelope. The recipient and IP addresses are still visible to the service.",
+        "Sealed sender で、送信者 ID をメッセージの封筒から外す。受信者や IP アドレスはサービスから見える。",
       ),
     ],
     sources: [
@@ -133,8 +133,8 @@ export const apps: AppProfile[] = [
     id: "imessage",
     name: "iMessage",
     transport: t(
-      "Delivered through APNs, and deleted from APNs once delivered.",
-      "APNs 経由で配送し、届いたら APNs から消える。",
+      "Goes through APNs, which deletes it once delivered.",
+      "APNs 経由で届き、配送後は APNs から消える。",
     ),
     e2ee: t("PQ3 (from iOS 17.4).", "PQ3 (iOS 17.4 から)。"),
     e2eeDefault: "yes",
@@ -142,7 +142,7 @@ export const apps: AppProfile[] = [
     notes: [
       t(
         "Attachments are encrypted with AES-CTR under a random 256-bit key and uploaded to iCloud.",
-        "添付ファイルはランダムな 256 bit 鍵の AES-CTR で暗号化して iCloud に上げる。",
+        "添付ファイルはランダムな 256bit 鍵の AES-CTR で暗号化して iCloud に上げる。",
       ),
     ],
     sources: [
@@ -161,8 +161,8 @@ export const apps: AppProfile[] = [
     name: "Messenger",
     transport: t("—", "—"),
     e2ee: t(
-      "Signal protocol. The default for personal chats since December 2023.",
-      "Signal protocol。2023 年 12 月から個人間のチャットで既定。",
+      "Signal protocol. Rolled out as the default for personal chats starting December 2023.",
+      "Signal protocol。2023 年 12 月から、個人間のチャットで既定化を順次展開。",
     ),
     e2eeDefault: "yes",
     groups: t("—", "—"),
@@ -185,7 +185,7 @@ export const apps: AppProfile[] = [
     transport: t("MTProto 2.0.", "MTProto 2.0。"),
     e2ee: t(
       "Only in Secret Chats, which you open separately: 1:1 and tied to one device. Regular chats are cloud chats.",
-      "別に開く Secret Chat のみ。1 対 1 で、端末ごと。通常のチャットはクラウドチャット。",
+      "E2EE は別途開く Secret Chat だけ。1 対 1 限定で、端末に紐づく。通常のチャットはクラウドチャット。",
     ),
     e2eeDefault: "no",
     groups: t(

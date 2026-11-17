@@ -10,11 +10,11 @@ export const ui = {
     en: "Follow one chat message from the send button to a read receipt, hop by hop, with step-through sequence diagrams.",
     ja: "送信ボタンから既読がつくまで、1 通のメッセージが通る道をシーケンス図で 1 ステップずつ追う。",
   },
-  kicker: { en: "A field guide to messaging internals", ja: "メッセージングの内側を歩く" },
+  kicker: { en: "What happens after you tap send", ja: "送信を押してから起きること" },
   heroTitle: { en: "Sent, delivered, read.", ja: "既読が\nつくまで" },
   heroLede: {
-    en: "You tap send, a bubble appears on someone else's screen, and soon after it says Read. Getting it there takes a fraction of a second. This is what travels between the phones and the servers along the way, one frame at a time.",
-    ja: "「送信」を押すと相手の画面に吹き出しが出て、しばらくすると「既読」がつく。相手の端末に届くまでは 1 秒もかからない。そのあいだに端末とサーバーのあいだを何が行き来しているのかを、フレーム単位で追っていく。",
+    en: "You tap send, a bubble appears on someone else's screen, and a moment later yours says Read. Getting it there takes a fraction of a second. This is what travels between the phones and the servers in that time, one frame at a time.",
+    ja: "「送信」を押すと相手の画面に吹き出しが出て、しばらくすると「既読」がつく。相手の端末に届くまでは 1 秒もかからない。その間に端末とサーバーを何が行き来しているのかを、フレーム単位で追っていく。",
   },
   toc: { en: "Contents", ja: "目次" },
   diagram: { en: "Sequence diagram", ja: "シーケンス図" },
@@ -32,7 +32,7 @@ export const ui = {
   },
   keys: {
     en: "Scroll, use ← → keys, or click any arrow to jump to it.",
-    ja: "スクロールするか、← → キー、または矢印のクリックで進む。",
+    ja: "スクロールか ← → キーで進む。矢印をクリックするとそのステップに飛ぶ。",
   },
   sources: { en: "Sources", ja: "出典" },
   footer: {

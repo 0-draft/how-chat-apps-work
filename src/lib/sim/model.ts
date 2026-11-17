@@ -111,7 +111,7 @@ function deliver(s: State, to: User, ev: Event[]): void {
 }
 
 function submit(s: State, from: User, clientId: string, text: string, ev: Event[]): void {
-  ev.push({ from, to: "server", kind: "request", text: same(`SEND clientId=${clientId}`) });
+  ev.push({ from, to: "server", kind: "request", text: same(`SEND clientMsgId=${clientId}`) });
   let row = s.rows.find((r) => r.clientId === clientId);
   const duplicate = row !== undefined;
   if (row) {
@@ -120,8 +120,8 @@ function submit(s: State, from: User, clientId: string, text: string, ev: Event[
       to: "server",
       kind: "note",
       text: {
-        en: `clientId=${clientId} already stored. Return the same seq, store nothing`,
-        ja: `clientId=${clientId} は処理済み。保存せず同じ seq を返す`,
+        en: `clientMsgId=${clientId} already stored. Return the same seq, store nothing`,
+        ja: `clientMsgId=${clientId} は処理済み。保存せず同じ seq を返す`,
       },
     });
   } else {
@@ -145,7 +145,7 @@ function submit(s: State, from: User, clientId: string, text: string, ev: Event[
       from: "server",
       to: from,
       kind: "response",
-      text: same(`ACK clientId=${clientId} seq=${row.seq}`),
+      text: same(`ACK clientMsgId=${clientId} seq=${row.seq}`),
     });
   }
 
