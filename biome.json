@@ -13,7 +13,8 @@
       "!.claude",
       "!playwright-report",
       "!test-results",
-      "!package-lock.json"
+      "!package-lock.json",
+      "!**/*.md"
     ]
   },
   "formatter": {
