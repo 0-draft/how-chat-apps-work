@@ -92,7 +92,7 @@ const statusLabel = (s: Status) => t.status[s];
             <span>{t.online}</span>
           </label>
         </header>
-        <ol class="bubbles" aria-live="polite">
+        <ol class="bubbles" aria-live="polite" aria-relevant="additions">
           {#each c.bubbles as b (b.clientId)}
             <li class={b.from === u ? "mine" : "theirs"}>
               <span class="bubble">{b.text}</span>
@@ -155,7 +155,7 @@ const statusLabel = (s: Status) => t.status[s];
     <strong>{t.log}</strong>
     <button type="button" class="quiet" onclick={() => (log = [])}>{t.clear}</button>
   </div>
-  <ol class="log" aria-live="polite">
+  <ol class="log" aria-live="off">
     {#each log as e (e.n)}
       <li class="ev ev--{e.kind}"><span class="ev-who">{arrow(e)}</span><code>{e.text[lang]}</code></li>
     {:else}
