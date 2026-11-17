@@ -31,10 +31,15 @@ jobs:
             --accept 200,206,429 --exclude-path node_modules
             "src/**/*.ts" "src/**/*.mdx" "src/**/*.astro" README.md
           fail: ${{ github.event_name == 'pull_request' }}
-      - if: steps.lychee.outputs.exit_code != 0 && github.event_name == 'schedule'
+      - if: steps.lychee.outputs.exit_code != 0 && github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue create --repo "$GITHUB_REPOSITORY" \
-            --title "Source links broken ($(date -u +%F))" \
-            --body-file lychee/out.md
+          open=$(gh issue list --repo "$GITHUB_REPOSITORY" --label broken-links --state open --json number --jq '.[0].number')
+          if [ -n "$open" ]; then
+            gh issue comment "$open" --repo "$GITHUB_REPOSITORY" --body-file lychee/out.md
+          else
+            gh label create broken-links --repo "$GITHUB_REPOSITORY" --color B60205 --force
+            gh issue create --repo "$GITHUB_REPOSITORY" --label broken-links \
+              --title "Source links broken" --body-file lychee/out.md
+          fi
