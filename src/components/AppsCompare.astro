@@ -1,0 +1,94 @@
+---
+import { type Lang, tr } from "../i18n/ui";
+import { apps, mls } from "../lib/apps";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const H = {
+  en: {
+    app: "App",
+    transport: "Phone ↔ server",
+    e2ee: "End-to-end encryption",
+    groups: "Groups",
+    default: { yes: "on by default", partial: "partly", no: "opt-in" },
+    mls: "Where group encryption is heading: MLS",
+  },
+  ja: {
+    app: "アプリ",
+    transport: "端末 ↔ サーバー",
+    e2ee: "エンドツーエンド暗号化",
+    groups: "グループ",
+    default: { yes: "既定で有効", partial: "一部のみ", no: "任意" },
+    mls: "グループ暗号化の行き先: MLS",
+  },
+}[lang];
+---
+
+<div class="apps">
+  <div class="apps-scroll" tabindex="0" role="region" aria-label={H.app}>
+    <table class="apps-table">
+      <thead>
+        <tr>
+          <th scope="col">{H.app}</th>
+          <th scope="col">{H.transport}</th>
+          <th scope="col">{H.e2ee}</th>
+          <th scope="col">{H.groups}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          apps.map((a) => (
+            <tr>
+              <th scope="row">
+                <a href={`#app-${a.id}`}>{a.name}</a>
+              </th>
+              <td>{a.transport[lang]}</td>
+              <td>
+                <span class={`dot dot--${a.e2eeDefault}`}>{H.default[a.e2eeDefault]}</span>
+                {a.e2ee[lang]}
+              </td>
+              <td>{a.groups[lang]}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="app-notes">
+    {
+      apps
+        .filter((a) => a.notes.length > 0 || a.sources.length > 0)
+        .map((a) => (
+          <article class="app-note" id={`app-${a.id}`}>
+            <h3>{a.name}</h3>
+            {a.notes.length > 0 && (
+              <ul>
+                {a.notes.map((n) => (
+                  <li>{n[lang]}</li>
+                ))}
+              </ul>
+            )}
+            <p class="cites">
+              <span>{tr(lang, "sources")}:</span>
+              {a.sources.map((s) => (
+                <a href={s.url}>{s.title}</a>
+              ))}
+            </p>
+          </article>
+        ))
+    }
+  </div>
+
+  <aside class="mls">
+    <h3>{H.mls}</h3>
+    <p>{mls.body[lang]}</p>
+    <p class="cites">
+      <span>{tr(lang, "sources")}:</span>
+      {mls.sources.map((s) => <a href={s.url}>{s.title}</a>)}
+    </p>
+  </aside>
+</div>

@@ -1,0 +1,15 @@
+---
+number: 2
+title: The always-on connection
+short: Always-on connection
+kind: seq
+seq: connection
+---
+
+A web page only answers when asked, so a server has no way to push a message down to it. Chat
+apps work around that by opening one connection at launch and keeping it until the app goes
+away. Every round trip spent setting it up is time you spend staring at stale messages.
+
+Discord documents its version of this openly: the server's first frame (Hello, opcode 10) tells
+the client [how often to heartbeat](#connection-12), and a client that drops can resume and have
+the events it missed replayed.

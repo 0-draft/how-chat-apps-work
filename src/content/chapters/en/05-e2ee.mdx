@@ -1,0 +1,11 @@
+---
+number: 5
+title: A letter the server can't read
+short: End-to-end encryption
+kind: seq
+seq: e2ee
+---
+
+TLS only protects the hop between phone and server; inside the server the message is plaintext.
+With end-to-end encryption, only the two phones hold a key that opens the body, and the server
+carries [a sealed envelope](#e2ee-7).

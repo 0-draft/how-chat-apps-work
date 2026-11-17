@@ -1,0 +1,58 @@
+---
+import type { Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const L = {
+  en: {
+    text: "Dinner at 7?",
+    note: "Timings are illustrative.",
+    label: "One message, as the sender sees it and as the wire sees it",
+    rows: [
+      { t: "+0 ms", frame: "SEND", status: "Sending", step: 1 },
+      { t: "+41 ms", frame: "ACK seq=1042", status: "Sent", step: 5 },
+      { t: "+63 ms", frame: "EVENT → B", status: "Sent", step: 6 },
+      { t: "+88 ms", frame: "DELIVERED", status: "Delivered", step: 9 },
+      { t: "+3.2 s", frame: "READ_RECEIPT", status: "Read", step: 12 },
+    ],
+  },
+  ja: {
+    text: "7時に駅前でいい?",
+    note: "時間は一例。",
+    label: "1 通のメッセージを、送った側の画面と通信の両方から見る",
+    rows: [
+      { t: "+0 ms", frame: "SEND", status: "送信中", step: 1 },
+      { t: "+41 ms", frame: "ACK seq=1042", status: "送信済み", step: 5 },
+      { t: "+63 ms", frame: "EVENT → B", status: "送信済み", step: 6 },
+      { t: "+88 ms", frame: "DELIVERED", status: "配信済み", step: 9 },
+      { t: "+3.2 s", frame: "READ_RECEIPT", status: "既読", step: 12 },
+    ],
+  },
+}[lang];
+const statuses = [...new Set(L.rows.map((r) => r.status))];
+---
+
+<figure class="receipt" aria-label={L.label}>
+  <div class="receipt-phone">
+    <p class="receipt-bubble">{L.text}</p>
+    <p class="receipt-status" aria-hidden="true">
+      {statuses.map((s, i) => <span style={`--i:${i}`}>{s}</span>)}
+    </p>
+  </div>
+  <ol class="receipt-log">
+    {
+      L.rows.map((r, i) => (
+        <li style={`--i:${i}`}>
+          <time>{r.t}</time>
+          <a href={`#overview-${r.step}`}>
+            <code>{r.frame}</code>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+  <figcaption>{L.note}</figcaption>
+</figure>

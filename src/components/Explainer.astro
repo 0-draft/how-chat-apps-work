@@ -1,0 +1,128 @@
+---
+import { getCollection, render } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { LANGS, type Lang, NATIVE_NAME, tr } from "../i18n/ui";
+import { sequences } from "../lib/sequences";
+import AppsCompare from "./AppsCompare.astro";
+import ArchitectureMap from "./ArchitectureMap.astro";
+import HeroReceipt from "./HeroReceipt.astro";
+import Legend from "./Legend.astro";
+import SequenceChapter from "./SequenceChapter.astro";
+import Simulator from "./Simulator.svelte";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const entries = (await getCollection("chapters", (e) => e.id.startsWith(`${lang}/`))).sort(
+  (a, b) => a.data.number - b.data.number,
+);
+const chapters = await Promise.all(
+  entries.map(async (e) => ({
+    ...e.data,
+    anchor: e.data.seq ?? e.data.kind,
+    Content: (await render(e)).Content,
+  })),
+);
+const frames = (c: (typeof chapters)[number]) => (c.seq ? sequences[c.seq].steps.length : 0);
+const chapterMeta = (c: (typeof chapters)[number]) => {
+  const n = frames(c);
+  if (lang === "ja") return n ? `第${c.number}章 ・ ${n} ステップ` : `第${c.number}章`;
+  return n ? `Chapter ${c.number} · ${n} steps` : `Chapter ${c.number}`;
+};
+const heroLines = tr(lang, "heroTitle").split("\n");
+const repo = "https://github.com/0-draft/how-chat-apps-work";
+---
+
+<header class="masthead">
+  <div class="masthead-top">
+    <p class="kicker">{tr(lang, "kicker")}</p>
+    <nav class="langs" aria-label="Language">
+      {
+        LANGS.map((l) => (
+          <a
+            href={getRelativeLocaleUrl(l, "")}
+            hreflang={l}
+            lang={l}
+            aria-current={l === lang ? "page" : undefined}
+          >
+            {NATIVE_NAME[l]}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+  <div class="hero">
+    <div>
+      <h1>{heroLines.map((line, i) => (i ? [<br />, line] : line))}</h1>
+      <p class="lede">{tr(lang, "heroLede")}</p>
+    </div>
+    <HeroReceipt lang={lang} />
+  </div>
+</header>
+
+<div class="frame">
+  <nav class="toc" aria-label={tr(lang, "toc")}>
+    <p class="toc-title">{tr(lang, "toc")}</p>
+    <ol>
+      {
+        chapters.map((c) => (
+          <li>
+            <a href={`#${c.anchor}`}>
+              <span class="toc-no">{c.number}</span>
+              {c.short}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+
+  <main id="main">
+    {
+      chapters.map((c) => (
+        <section class={`chapter chapter--${c.kind}`} id={c.anchor} aria-labelledby={`${c.anchor}-h`}>
+          <header class="chapter-head">
+            <p class="chapter-meta">{chapterMeta(c)}</p>
+            <h2 id={`${c.anchor}-h`}>{c.title}</h2>
+          </header>
+          <div class="prose">
+            <c.Content />
+          </div>
+          {c.kind === "map" && (
+            <>
+              <ArchitectureMap lang={lang} />
+              <Legend lang={lang} />
+            </>
+          )}
+          {c.kind === "seq" && c.seq && <SequenceChapter seq={c.seq} lang={lang} />}
+          {c.kind === "sim" && <Simulator lang={lang} client:visible />}
+          {c.kind === "apps" && <AppsCompare lang={lang} />}
+        </section>
+      ))
+    }
+  </main>
+</div>
+
+<footer class="colophon">
+  <p>{tr(lang, "footer")}</p>
+  <p><a href={repo}>{tr(lang, "editOnGitHub")}</a></p>
+</footer>
+
+<script>
+  const links = new Map(
+    [...document.querySelectorAll<HTMLAnchorElement>(".toc a")].map((a) => [a.hash.slice(1), a]),
+  );
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        for (const a of links.values()) a.removeAttribute("aria-current");
+        links.get(e.target.id)?.setAttribute("aria-current", "location");
+      }
+    },
+    { rootMargin: "-30% 0px -65% 0px" },
+  );
+  for (const s of document.querySelectorAll("main > section")) io.observe(s);
+</script>

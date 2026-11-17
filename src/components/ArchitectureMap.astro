@@ -1,0 +1,82 @@
+---
+import type { Lang } from "../i18n/ui";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const L = {
+  en: {
+    a: "Phone A",
+    b: "Phone B",
+    local: "app + local DB",
+    gw: "Gateway",
+    gwSub: "millions of connections",
+    msg: "Messaging",
+    msgSub: "assigns seq, delivers",
+    db: "Storage",
+    dbSub: "chat log",
+    push: "APNs / FCM",
+    pushSub: "OS push",
+    media: "Media / CDN",
+    always: "always on",
+    wake: "wakes a sleeping phone",
+    direct: "files go direct",
+    caption: "Thick lines stay open. Dashed lines are used only when needed.",
+    title: "How the pieces of a chat app connect",
+  },
+  ja: {
+    a: "端末 A",
+    b: "端末 B",
+    local: "アプリ + ローカル DB",
+    gw: "ゲートウェイ",
+    gwSub: "数百万本の接続",
+    msg: "メッセージ",
+    msgSub: "seq を振る・配る",
+    db: "ストレージ",
+    dbSub: "チャットログ",
+    push: "APNs / FCM",
+    pushSub: "OS の通知網",
+    media: "メディア / CDN",
+    always: "常時接続",
+    wake: "寝ている端末を起こす",
+    direct: "画像は直接置く",
+    caption: "太線は張りっぱなしの接続。点線は必要なときだけ使う経路。",
+    title: "チャットアプリの構成",
+  },
+}[lang];
+---
+
+<figure class="map">
+  <div class="map-scroll" tabindex="0" role="region" aria-label={L.title}>
+    <svg viewBox="0 0 720 300" role="img" aria-labelledby="map-title">
+      <title id="map-title">{L.title}</title>
+      <defs>
+        <marker id="map-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,1 L10,5 L0,9 z" class="mk" />
+        </marker>
+      </defs>
+      <path class="edge edge--live" d="M126,92 C160,92 170,140 196,140" />
+      <path class="edge edge--live" d="M126,222 C160,222 170,170 196,170" />
+      <path class="edge" d="M316,150 H384" marker-end="url(#map-arrow)" />
+      <path class="edge" d="M506,150 H574" marker-end="url(#map-arrow)" />
+      <path class="edge edge--dash" d="M446,190 V230" marker-end="url(#map-arrow)" />
+      <path class="edge edge--dash" d="M386,258 C250,258 180,250 128,236" marker-end="url(#map-arrow)" />
+      <path class="edge edge--dash" d="M126,76 C220,30 330,40 384,40" marker-end="url(#map-arrow)" />
+
+      <g class="node node--device"><rect x="16" y="60" width="110" height="64" rx="14" /><text x="71" y="90">{L.a}</text><text x="71" y="108" class="sub">{L.local}</text></g>
+      <g class="node node--device"><rect x="16" y="190" width="110" height="64" rx="14" /><text x="71" y="220">{L.b}</text><text x="71" y="238" class="sub">{L.local}</text></g>
+      <g class="node node--edge"><rect x="196" y="110" width="120" height="80" rx="3" /><text x="256" y="146">{L.gw}</text><text x="256" y="164" class="sub">{L.gwSub}</text></g>
+      <g class="node node--service"><rect x="386" y="110" width="120" height="80" rx="3" /><text x="446" y="146">{L.msg}</text><text x="446" y="164" class="sub">{L.msgSub}</text></g>
+      <g class="node node--store"><path d="M576,118 a60,8 0 0,1 120,0 v64 a60,8 0 0,1 -120,0 z M576,118 a60,8 0 0,0 120,0" /><text x="636" y="160">{L.db}</text><text x="636" y="178" class="sub">{L.dbSub}</text></g>
+      <g class="node node--external"><rect x="386" y="232" width="120" height="52" rx="3" /><text x="446" y="256">{L.push}</text><text x="446" y="272" class="sub">{L.pushSub}</text></g>
+      <g class="node node--store"><path d="M386,22 a60,8 0 0,1 120,0 v40 a60,8 0 0,1 -120,0 z M386,22 a60,8 0 0,0 120,0" /><text x="446" y="54">{L.media}</text></g>
+
+      <text x="150" y="80" class="edge-label">{L.always}</text>
+      <text x="200" y="282" class="edge-label">{L.wake}</text>
+      <text x="220" y="30" class="edge-label">{L.direct}</text>
+    </svg>
+  </div>
+  <figcaption>{L.caption}</figcaption>
+</figure>
