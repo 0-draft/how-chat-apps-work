@@ -40,6 +40,10 @@ export const ui = {
     ja: "図中のプロトコル・フィールド名・数値は説明のための架空のもの。実在のアプリについての記述は各出典による。",
   },
   editOnGitHub: { en: "Source on GitHub", ja: "GitHub でソースを見る" },
+  license: {
+    en: "Text and diagrams CC BY 4.0, code MIT.",
+    ja: "文章と図は CC BY 4.0、コードは MIT。",
+  },
   skip: { en: "Skip to content", ja: "本文へスキップ" },
 } satisfies Record<string, L10n>;
 
