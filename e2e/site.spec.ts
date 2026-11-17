@@ -23,11 +23,16 @@ async function noOverflow(page: Page) {
 
 for (const p of pages) {
   test.describe(p.lang, () => {
+    let errors: string[] = [];
+
     test.beforeEach(async ({ page }) => {
-      const errors: string[] = [];
+      errors = [];
       page.on("pageerror", (e) => errors.push(String(e)));
       await page.goto(p.path);
-      test.info().annotations.push({ type: "errors", description: errors.join("\n") });
+    });
+
+    test.afterEach(() => {
+      expect(errors).toEqual([]);
     });
 
     test("renders every chapter with its diagram", async ({ page }) => {
@@ -66,7 +71,7 @@ for (const p of pages) {
       await sim.scrollIntoViewIfNeeded();
       const a = sim.locator('.phone[data-user="A"]');
       const b = sim.locator('.phone[data-user="B"]');
-      await expect(a.getByRole("switch")).toBeEnabled();
+      await expect(page.locator("astro-island:has(.sim)")).not.toHaveAttribute("ssr");
 
       await b.getByRole("switch").uncheck();
       await a.getByRole("textbox").fill("hi");
@@ -94,6 +99,16 @@ for (const p of pages) {
     });
   });
 }
+
+test("a step link in the URL opens that step", async ({ page }) => {
+  await page.goto(`${BASE}#retry-3`);
+  await expect(page.locator('seq-player[data-seq="retry"]')).toHaveAttribute("data-step", "2");
+});
+
+test("an out-of-range step link falls back to a real step", async ({ page }) => {
+  await page.goto(`${BASE}#retry-99`);
+  await expect(page.locator('seq-player[data-seq="retry"] .card.is-current')).toHaveCount(1);
+});
 
 test("language switch links the two versions", async ({ page }) => {
   await page.goto(BASE);
