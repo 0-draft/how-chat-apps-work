@@ -1,0 +1,8 @@
+node_modules
+dist
+.astro
+playwright-report
+test-results
+.playwright-mcp
+.DS_Store
+.claude/settings.local.json
