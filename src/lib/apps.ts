@@ -97,8 +97,8 @@ export const apps: AppProfile[] = [
         "添付ファイルは AES-256-CBC と HMAC-SHA256 で暗号化して blob store に上げる。",
       ),
       t(
-        "The second check mark appears once the message reaches the recipient, and both turn blue once it has been read. In a group, each waits for every member. Either side can turn read receipts off, and then the blue never comes.",
-        "相手の端末に届くと 2 つ目のチェックがつき、読まれると 2 つとも青になる。グループではどちらも全員分がそろうまで変わらない。既読通知はどちらの側でもオフにでき、その場合は青にならない。",
+        "The second check mark appears once the message reaches the recipient, and both turn blue once it has been read. In a group, each waits for every member. In a one-to-one chat, either person can turn read receipts off, and then the blue never comes.",
+        "相手の端末に届くと 2 つ目のチェックがつき、読まれると 2 つとも青になる。グループではどちらも全員分がそろうまで変わらない。1 対 1 のチャットでは、どちらかが既読通知をオフにすると青にならない。",
       ),
     ],
     sources: [
