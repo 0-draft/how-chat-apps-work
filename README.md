@@ -46,4 +46,4 @@ Type is set in Literata, Schibsted Grotesk and Martian Mono, with Zen Kaku Gothi
 
 ## License
 
-Code is [MIT](LICENSE). The writing and diagrams (`src/content/`, `src/lib/sequences/`, `src/lib/apps.ts`, `docs/`) are [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): reuse them anywhere, with a link back.
+Code is [MIT](LICENSE). The writing and diagrams (`src/content/`, `src/lib/sequences/`, `src/lib/apps.ts`, `docs/`) are [CC BY 4.0](LICENSE-CONTENT): reuse them anywhere, with attribution.
