@@ -9,7 +9,7 @@ const pages = [
     path: `${BASE}ja/`,
     next: "次のステップ",
     send: "送信",
-    open: "トークを開く",
+    open: "チャットを開く",
     resend: "再送",
   },
 ] as const;
