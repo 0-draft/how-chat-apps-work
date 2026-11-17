@@ -97,8 +97,8 @@ export const apps: AppProfile[] = [
         "添付ファイルは AES-256-CBC と HMAC-SHA256 で暗号化して blob store に上げる。",
       ),
       t(
-        "A second check mark means the message was received; two blue check marks mean it was read. In a group, both wait for every member.",
-        "チェックが 2 つになったら受信済み、2 つとも青になったら既読。グループでは全員がそうなるまで変わらない。",
+        "The second check mark appears once the message reaches the recipient, and both turn blue once it has been read. In a group, each waits for every member. Either side can turn read receipts off, and then the blue never comes.",
+        "2 つ目のチェックは相手の端末に届いた時点で、2 つとも青になるのは読まれた時点でつく。グループではどちらも全員分がそろうまで変わらない。既読通知はどちらの側でもオフにでき、その場合は青にならない。",
       ),
     ],
     sources: [
