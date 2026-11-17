@@ -38,5 +38,8 @@
     "markdownlint-cli2": "^0.24.1",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"
+  },
+  "overrides": {
+    "katex": "^0.18.2"
   }
 }
