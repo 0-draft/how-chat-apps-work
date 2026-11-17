@@ -1,0 +1,162 @@
+---
+import { type Lang, pick, tr } from "../i18n/ui";
+import { COL_W, layout, PAD } from "../lib/layout";
+import type { Sequence } from "../lib/sequences/types";
+
+interface Props {
+  seq: Sequence;
+  lang: Lang;
+}
+
+const { seq, lang } = Astro.props;
+const geo = layout(seq);
+const BOX_H = 44;
+const boxW = COL_W - 16;
+const markers = ["request", "response", "push", "self"] as const;
+const titleId = `${seq.id}-svg-title`;
+const descId = `${seq.id}-svg-desc`;
+const names = seq.actors.map((a) => a.name[lang]).join(", ");
+const headH = PAD + BOX_H + 10;
+const bodyH = geo.height - headH;
+const cap = `--natural:${geo.width}px`;
+---
+
+<svg
+  class="seq-heads"
+  style={cap}
+  viewBox={`0 0 ${geo.width} ${headH}`}
+  width={geo.width}
+  height={headH}
+  aria-hidden="true"
+>
+  {
+    seq.actors.map((a) => {
+      const cx = geo.columns.get(a.id) ?? 0;
+      const x = cx - boxW / 2;
+      const dy = a.kind === "store" ? 4 : 0;
+      const r = 6;
+      return (
+        <g class={`actor actor--${a.kind}`} data-actor={a.id}>
+          <line class="lifeline" x1={cx} x2={cx} y1={PAD + BOX_H} y2={headH} />
+          {a.kind === "store" ? (
+            <path
+              class="actor-box"
+              d={`M${x},${PAD + r} a${boxW / 2},${r} 0 0,1 ${boxW},0 v${BOX_H - r * 2} a${boxW / 2},${r} 0 0,1 ${-boxW},0 z M${x},${PAD + r} a${boxW / 2},${r} 0 0,0 ${boxW},0`}
+            />
+          ) : (
+            <rect
+              class="actor-box"
+              x={x}
+              y={PAD}
+              width={boxW}
+              height={BOX_H}
+              rx={a.kind === "device" ? 12 : 3}
+            />
+          )}
+          <text class="actor-name" x={cx} y={PAD + dy + (a.sub ? 19 : 27)}>
+            {a.name[lang]}
+          </text>
+          {a.sub && (
+            <text class="actor-sub" x={cx} y={PAD + dy + 34}>
+              {a.sub[lang]}
+            </text>
+          )}
+        </g>
+      );
+    })
+  }
+</svg>
+<svg
+  class="seq-svg"
+  style={cap}
+  viewBox={`0 ${headH} ${geo.width} ${bodyH}`}
+  width={geo.width}
+  height={bodyH}
+  role="group"
+  aria-labelledby={titleId}
+  aria-describedby={descId}
+  data-top={headH}
+>
+  <title id={titleId}>{tr(lang, "diagram")}</title>
+  <desc id={descId}>{names}</desc>
+  <defs>
+    {
+      markers.map((k) => (
+        <marker
+          id={`${seq.id}-mk-${k}`}
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="7"
+          markerHeight="7"
+          orient="auto-start-reverse"
+        >
+          <path d="M0,1 L10,5 L0,9 z" class={`mk mk--${k}`} />
+        </marker>
+      ))
+    }
+  </defs>
+
+  {
+    seq.actors.map((a) => {
+      const cx = geo.columns.get(a.id) ?? 0;
+      return <line class="lifeline" x1={cx} x2={cx} y1={headH} y2={geo.height - PAD / 2} />;
+    })
+  }
+
+  {
+    seq.steps.map((s, i) => {
+      const g = geo.arrows[i];
+      if (!g) return null;
+      const label = pick(lang, s.label);
+      const mid = (g.x1 + g.x2) / 2;
+      return (
+        <a
+          href={`#${seq.id}-${i + 1}`}
+          class={`step step--${s.kind}`}
+          data-step={i}
+          aria-label={`${tr(lang, "step")} ${i + 1}: ${s.title[lang]}`}
+        >
+          <rect class="hit" x="0" y={g.y - 20} width={geo.width} height="40" />
+          {g.self ? (
+            <>
+              <path
+                class="arrow"
+                d={`M${g.x1},${g.y - 9} h26 v18 h-24`}
+                marker-end={`url(#${seq.id}-mk-self)`}
+              />
+              <text class="label label--self" x={g.x1 + 34} y={g.y + 4}>
+                {label}
+              </text>
+            </>
+          ) : (
+            <>
+              <line
+                class="arrow"
+                x1={g.x1}
+                x2={g.x2}
+                y1={g.y}
+                y2={g.y}
+                marker-end={s.kind === "lost" ? undefined : `url(#${seq.id}-mk-${s.kind})`}
+              />
+              {s.kind === "lost" && (
+                <path
+                  class="lost-x"
+                  d={`M${g.x2 - 6},${g.y - 6} l12,12 M${g.x2 + 6},${g.y - 6} l-12,12`}
+                />
+              )}
+              <text class="label" x={mid} y={g.y - 7}>
+                {label}
+              </text>
+            </>
+          )}
+          <text class="num" x="6" y={g.y + 4}>
+            {i + 1}
+          </text>
+        </a>
+      );
+    })
+  }
+
+  <circle class="packet" r="6" cx="0" cy="0" visibility="hidden"></circle>
+</svg>

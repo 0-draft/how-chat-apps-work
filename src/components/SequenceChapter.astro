@@ -1,0 +1,73 @@
+---
+import { type Lang, pick, tr } from "../i18n/ui";
+import { layout } from "../lib/layout";
+import { type SequenceId, sequences } from "../lib/sequences";
+import SequenceFigure from "./SequenceFigure.astro";
+
+interface Props {
+  seq: SequenceId;
+  lang: Lang;
+}
+
+const { seq: id, lang } = Astro.props;
+const seq = sequences[id];
+const geo = layout(seq);
+const arrows = JSON.stringify(geo.arrows.map((a, i) => ({ ...a, kind: seq.steps[i]?.kind })));
+---
+
+<seq-player data-seq={id} data-arrows={arrows} data-mode="static">
+  <div class="scrolly">
+    <figure class="stage" tabindex="0" aria-label={tr(lang, "diagram")}>
+      <div class="stage-canvas">
+        <SequenceFigure seq={seq} lang={lang} />
+      </div>
+      <div class="stage-bar">
+        <button type="button" class="ctl" data-act="restart" aria-label={tr(lang, "restart")}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3v4h4M3.5 7A5 5 0 1 1 4 11" /></svg>
+        </button>
+        <button type="button" class="ctl" data-act="play" aria-pressed="false" aria-label={tr(lang, "play")}>
+          <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z" /></svg>
+          <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10M11 3v10" /></svg>
+        </button>
+        <p class="stage-caption" aria-live="polite"></p>
+        <button type="button" class="ctl" data-act="prev" aria-label={tr(lang, "prev")}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3L5 8l5 5" /></svg>
+        </button>
+        <output class="stage-count">1 / {seq.steps.length}</output>
+        <button type="button" class="ctl" data-act="next" aria-label={tr(lang, "next")}>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3l5 5-5 5" /></svg>
+        </button>
+      </div>
+    </figure>
+
+    <ol class="cards">
+      {
+        seq.steps.map((s, i) => {
+          const from = seq.actors.find((a) => a.id === s.from)?.name[lang];
+          const to = seq.actors.find((a) => a.id === s.to)?.name[lang];
+          return (
+            <li class={`card card--${s.kind}`} id={`${id}-${i + 1}`} data-step={i}>
+              <p class="card-meta">
+                <span class="card-no">{i + 1}</span>
+                <span class="card-route">{s.from === s.to ? from : `${from} → ${to}`}</span>
+                <code class="card-label">{pick(lang, s.label)}</code>
+              </p>
+              <h3>{s.title[lang]}</h3>
+              <p class="card-body">{s.body[lang]}</p>
+              {s.payload && (
+                <details class="wire" open>
+                  <summary>{tr(lang, "payload")}</summary>
+                  <pre tabindex="0"><code>{s.payload}</code></pre>
+                </details>
+              )}
+            </li>
+          );
+        })
+      }
+    </ol>
+  </div>
+</seq-player>
+
+<script>
+  import "../scripts/seq-player";
+</script>
