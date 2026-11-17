@@ -234,14 +234,14 @@ export const apps: AppProfile[] = [
 
 export const mls = {
   body: t(
-    "MLS (RFC 9420, 2023) is the IETF standard for end-to-end encrypted groups: the cost of updating keys grows with log(n) of the group size rather than n. Wire has moved to it, Webex uses it for zero-trust meetings, Discord's DAVE is built on it, and GSMA's RCS Universal Profile 3.0 specifies MLS-based end-to-end encryption.",
-    "MLS (RFC 9420、2023 年) はグループ E2EE の IETF 標準で、鍵の更新コストがメンバー数 n ではなく log(n) に比例して増える。Wire は MLS に移行し、Webex はゼロトラスト会議で採用、Discord の DAVE も MLS 上に作られている。GSMA の RCS Universal Profile 3.0 も MLS ベースの E2EE を規定している。",
+    "MLS (RFC 9420, 2023) is the IETF standard for end-to-end encrypted groups: the cost of updating keys grows with log(n) of the group size rather than n. Wire is moving to it from its own Proteus protocol, Webex uses it for zero-trust meetings, Discord's DAVE is built on it, and GSMA's RCS Universal Profile 3.0 specifies MLS-based end-to-end encryption.",
+    "MLS (RFC 9420、2023 年) はグループ E2EE の IETF 標準で、鍵の更新コストがメンバー数 n ではなく log(n) に比例して増える。Wire は独自の Proteus から MLS への移行を進めていて、Webex はゼロトラスト会議で採用、Discord の DAVE も MLS 上に作られている。GSMA の RCS Universal Profile 3.0 も MLS ベースの E2EE を規定している。",
   ),
   sources: [
     { title: "RFC 9420", url: "https://www.rfc-editor.org/rfc/rfc9420.html" },
     {
-      title: "Wire: Messaging Layer Security",
-      url: "https://support.wire.com/hc/en-us/articles/12434725011485-Messaging-Layer-Security-MLS",
+      title: "Wire: MLS is coming to Wire",
+      url: "https://wire.com/en/blog/mls-is-coming-to-wire-app-learn-more",
     },
     {
       title: "Webex: End-to-end encryption",
