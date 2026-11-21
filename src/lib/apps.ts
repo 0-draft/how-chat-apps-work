@@ -238,8 +238,8 @@ export const apps: AppProfile[] = [
 
 export const mls = {
   body: t(
-    "MLS (RFC 9420, 2023) is the IETF standard for end-to-end encrypted groups: the cost of updating keys grows with log(n) of the group size rather than n. Wire is moving to it from its own Proteus protocol, Webex uses it for zero-trust meetings, Discord's DAVE is built on it, and GSMA's RCS Universal Profile 3.0 specifies MLS-based end-to-end encryption. In May 2026 Apple and Google began a beta of end-to-end encrypted RCS between iPhone and Android.",
-    "MLS (RFC 9420、2023 年) はグループ E2EE の IETF 標準で、鍵の更新コストがメンバー数 n ではなく log(n) に比例して増える。Wire は独自の Proteus から MLS への移行を進めていて、Webex はゼロトラスト会議で採用、Discord の DAVE も MLS 上に作られている。GSMA の RCS Universal Profile 3.0 も MLS ベースの E2EE を規定していて、2026 年 5 月には Apple と Google が iPhone と Android の間の E2EE RCS をベータで始めた。",
+    "MLS (RFC 9420, 2023) is the IETF standard for end-to-end encrypted groups: the cost of updating keys grows with log(n) of the group size rather than n. Wire is moving to it from its own Proteus protocol, Webex uses it for zero-trust meetings, Discord's DAVE is built on it, and GSMA's RCS Universal Profile 3.0 specifies MLS-based end-to-end encryption. In May 2026 Apple and Google began a beta of end-to-end encrypted RCS between iPhone and Android; neither announcement names the protocol it uses.",
+    "MLS (RFC 9420、2023 年) はグループ E2EE の IETF 標準で、鍵の更新コストがメンバー数 n ではなく log(n) に比例して増える。Wire は独自の Proteus から MLS への移行を進めていて、Webex はゼロトラスト会議で採用、Discord の DAVE も MLS 上に作られている。GSMA の RCS Universal Profile 3.0 も MLS ベースの E2EE を規定していて、2026 年 5 月には Apple と Google が iPhone と Android の間の E2EE RCS をベータで始めた (どちらの発表も、使っているプロトコルの名前は出していない)。",
   ),
   sources: [
     { title: "RFC 9420", url: "https://www.rfc-editor.org/rfc/rfc9420.html" },
@@ -262,6 +262,10 @@ export const mls = {
     {
       title: "Apple: End-to-end encrypted RCS messaging begins rolling out in beta",
       url: "https://www.apple.com/newsroom/2026/05/end-to-end-encrypted-rcs-messaging-begins-rolling-out-today-in-beta/",
+    },
+    {
+      title: "Google: End-to-end encrypted RCS between Android and iOS",
+      url: "https://blog.google/products-and-platforms/platforms/android/android-ios-end-to-end-encrypted-rcs-messaging/",
     },
   ] satisfies Source[],
 };
