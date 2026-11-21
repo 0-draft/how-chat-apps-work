@@ -216,8 +216,8 @@ export const apps: AppProfile[] = [
       "Gateway は secure WebSocket。サーバーの Hello (opcode 10) がハートビート間隔を指定し、切れた端末は resume で取りこぼしを再送してもらう。",
     ),
     e2ee: t(
-      "Text is not end-to-end encrypted. Audio and video use DAVE, built on MLS.",
-      "テキストは E2EE ではない。音声・ビデオは MLS ベースの DAVE で E2EE。",
+      "Text is not end-to-end encrypted. Since March 2026 every voice and video call uses DAVE, built on MLS; Stage channels are the one exception.",
+      "テキストは E2EE ではない。音声・ビデオ通話は 2026 年 3 月から、Stage チャンネルを除いてすべて MLS ベースの DAVE で E2EE。",
     ),
     e2eeDefault: "partial",
     groups: t("—", "—"),
@@ -228,14 +228,18 @@ export const apps: AppProfile[] = [
         title: "Discord: Meet DAVE",
         url: "https://discord.com/blog/meet-dave-e2ee-for-audio-video",
       },
+      {
+        title: "Discord: Every voice and video call is now E2EE",
+        url: "https://discord.com/blog/every-voice-and-video-call-on-discord-is-now-end-to-end-encrypted",
+      },
     ],
   },
 ];
 
 export const mls = {
   body: t(
-    "MLS (RFC 9420, 2023) is the IETF standard for end-to-end encrypted groups: the cost of updating keys grows with log(n) of the group size rather than n. Wire is moving to it from its own Proteus protocol, Webex uses it for zero-trust meetings, Discord's DAVE is built on it, and GSMA's RCS Universal Profile 3.0 specifies MLS-based end-to-end encryption.",
-    "MLS (RFC 9420、2023 年) はグループ E2EE の IETF 標準で、鍵の更新コストがメンバー数 n ではなく log(n) に比例して増える。Wire は独自の Proteus から MLS への移行を進めていて、Webex はゼロトラスト会議で採用、Discord の DAVE も MLS 上に作られている。GSMA の RCS Universal Profile 3.0 も MLS ベースの E2EE を規定している。",
+    "MLS (RFC 9420, 2023) is the IETF standard for end-to-end encrypted groups: the cost of updating keys grows with log(n) of the group size rather than n. Wire is moving to it from its own Proteus protocol, Webex uses it for zero-trust meetings, Discord's DAVE is built on it, and GSMA's RCS Universal Profile 3.0 specifies MLS-based end-to-end encryption. In May 2026 Apple and Google began a beta of end-to-end encrypted RCS between iPhone and Android; neither announcement names the protocol it uses.",
+    "MLS (RFC 9420、2023 年) はグループ E2EE の IETF 標準で、鍵の更新コストがメンバー数 n ではなく log(n) に比例して増える。Wire は独自の Proteus から MLS への移行を進めていて、Webex はゼロトラスト会議で採用、Discord の DAVE も MLS 上に作られている。GSMA の RCS Universal Profile 3.0 も MLS ベースの E2EE を規定していて、2026 年 5 月には Apple と Google が iPhone と Android の間の E2EE RCS をベータで始めた (どちらの発表も、使っているプロトコルの名前は出していない)。",
   ),
   sources: [
     { title: "RFC 9420", url: "https://www.rfc-editor.org/rfc/rfc9420.html" },
@@ -254,6 +258,14 @@ export const mls = {
     {
       title: "GSMA: RCS encryption",
       url: "https://www.gsma.com/newsroom/article/rcs-encryption-a-leap-towards-secure-and-interoperable-messaging/",
+    },
+    {
+      title: "Apple: End-to-end encrypted RCS messaging begins rolling out in beta",
+      url: "https://www.apple.com/newsroom/2026/05/end-to-end-encrypted-rcs-messaging-begins-rolling-out-today-in-beta/",
+    },
+    {
+      title: "Google: End-to-end encrypted RCS between Android and iOS",
+      url: "https://blog.google/products-and-platforms/platforms/android/android-ios-end-to-end-encrypted-rcs-messaging/",
     },
   ] satisfies Source[],
 };
